@@ -3,7 +3,6 @@ import sys
 import pandas as pd
 import joblib
 import numpy as np
-from pathlib import Path
 from CREDIT_UTILITY.logger import logger
 from CREDIT_UTILITY.Exception import CustomException
 from sklearn.preprocessing import StandardScaler,OneHotEncoder
