@@ -20,3 +20,9 @@ class DataValidationConfig:
 class DataTransformationConfig:
     root_dir: Path
     data_path: Path
+    train_data_path: Path
+    test_data_path: Path 
+    Processed_data_path: Path 
+    Transformed_data_path: Path 
+    Transformed_data_OBJ_PATH: Path 
+    Processed_data_OBJ_PATH: Path 

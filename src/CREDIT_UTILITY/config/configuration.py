@@ -1,6 +1,6 @@
 from CREDIT_UTILITY.constants import *
 from CREDIT_UTILITY.utils.common import read_yaml, create_directories
-from CREDIT_UTILITY.entity.config_entity import (DataIngestionConfig,DataValidationConfig)
+from CREDIT_UTILITY.entity.config_entity import (DataIngestionConfig,DataValidationConfig,DataTransformationConfig)
 from CREDIT_UTILITY.logger import logger
 
 class ConfigurationManager:
@@ -46,3 +46,23 @@ class ConfigurationManager:
         )
 
         return data_validation_config
+    
+
+    def get_data_transformation_config(self) -> DataTransformationConfig:
+        config = self.config.data_transformation
+
+        create_directories([config.root_dir,config.Processed_data_path,config.Transformed_data_path])
+
+        data_transformation_config = DataTransformationConfig(
+            root_dir=config.root_dir,
+            data_path=config.data_path,
+            train_data_path=config.train_data_path,
+            test_data_path=config.test_data_path,
+            Processed_data_path=config.Processed_data_path,
+            Transformed_data_path=config.Transformed_data_path,
+            Transformed_data_OBJ_PATH= config.Transformed_data_OBJ_PATH,
+            Processed_data_OBJ_PATH= config.Processed_data_OBJ_PATH
+        
+        )
+
+        return data_transformation_config
