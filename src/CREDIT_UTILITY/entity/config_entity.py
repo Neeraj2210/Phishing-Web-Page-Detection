@@ -26,3 +26,20 @@ class DataTransformationConfig:
     Transformed_data_path: Path 
     Transformed_data_OBJ_PATH: Path 
     Processed_data_OBJ_PATH: Path 
+
+
+@dataclass(frozen=True)
+class ModelTrainerConfig:
+    root_dir: Path
+    train_data_path: Path
+    test_data_path: Path
+    model_name: str
+    learning_rate: int
+    n_estimators: int
+    max_depth:int
+    min_child_weight:int
+    gamma: float
+    subsample: float
+    colsample_bytree: float
+
+    target_column: int

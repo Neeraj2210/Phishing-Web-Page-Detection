@@ -74,7 +74,7 @@ class DataTransformation:
 
     def get_data_transformation_obj(self):
         
-      try:  
+        try:  
             
             
             continuous_features=['UrlLength', 'NumNumericChars', 'HostnameLength', 'PathLength', 'QueryLength',
@@ -104,7 +104,7 @@ class DataTransformation:
             logger.info("Pipeline Steps Completed")
             return preprocssor
       
-      except Exception as e:
+        except Exception as e:
                  error = CustomException(e, sys)
                  logger.info(error.error_message)
 
@@ -138,12 +138,11 @@ class DataTransformation:
 
     def inititate_data_transformation(self):
         try:
-
             train = pd.read_csv(self.config.train_data_path)
             test = pd.read_csv(self.config.test_data_path)
 
             logger.info("Obtaining FE steps object")
-            
+        
             fe_obj = self.get_feature_engineering_object()
 
             train = fe_obj.fit_transform(train)
@@ -157,42 +156,40 @@ class DataTransformation:
 
             processing_obj = self.get_data_transformation_obj()
 
-            traget_columns_name = "CLASS_LABEL"
-            
-            X_train = train.drop(columns = traget_columns_name, axis = 1)
-            y_train = train[traget_columns_name]
-            
-            X_test = test.drop(columns = traget_columns_name, axis = 1)
-            y_test = test[traget_columns_name]
-            
-            logger.info(X_train.columns)
+            target_column_name = "CLASS_LABEL"
+        
+            X_train = train.drop(columns=target_column_name)  # Drop the target column
+            y_train = train[target_column_name]  # Extract the target column
+        
+            X_test = test.drop(columns=target_column_name)  # Drop the target column
+            y_test = test[target_column_name]  # Extract the target column
+        
+            logger.info(X_train.columns)  # Log the column names before transformation
+        
+            # Fit and transform X_train, and transform X_test
             X_train = processing_obj.fit_transform(X_train)
             X_test = processing_obj.transform(X_test)
-            
-            train_arr = np.c_[X_train, np.array(y_train)]
-            test_arr = np.c_[X_test, np.array(y_test)]
+        
+            # Concatenate X_train and y_train, X_test and y_test
+            train_df = pd.concat([pd.DataFrame(X_train), pd.DataFrame(y_train)], axis=1)
+            test_df = pd.concat([pd.DataFrame(X_test), pd.DataFrame(y_test)], axis=1)
 
-            df_train = pd.DataFrame(train_arr)
-            df_test = pd.DataFrame(test_arr)
-
-            
-            df_train.to_csv(os.path.join(self.config.Transformed_data_path, "train.csv"),index = False)
-            df_test.to_csv(os.path.join(self.config.Transformed_data_path, "test.csv"),index = False)
+            # Save transformed data
+            train_df.to_csv(os.path.join(self.config.Transformed_data_path, "train.csv"), index=False)
+            test_df.to_csv(os.path.join(self.config.Transformed_data_path, "test.csv"), index=False)
 
             logger.info("Processed and Feature Engineered data")
-            logger.info(df_train.shape)
-            logger.info(df_test.shape)
+            logger.info(train_df.shape)
+            logger.info(test_df.shape)
 
-            joblib.dump(processing_obj,self.config.Processed_data_OBJ_PATH)
-
+            joblib.dump(processing_obj, self.config.Processed_data_OBJ_PATH)
             joblib.dump(fe_obj, self.config.Transformed_data_OBJ_PATH)
 
-            logger.info("Successfully dump {} and, {}".format(self.config.Processed_data_OBJ_PATH,self.config.Processed_data_OBJ_PATH))
+            logger.info("Successfully dumped {} and {}".format(self.config.Processed_data_OBJ_PATH, self.config.Processed_data_OBJ_PATH))
             logger.info("Data Transformation completed")
-            return(train_arr,
-                   test_arr,
-                   self.config.Processed_data_OBJ_PATH)
+        
+            return (train_df.values, test_df.values, self.config.Processed_data_OBJ_PATH)
 
         except Exception as e:
-                 error = CustomException(e, sys)
-                 logger.info(error.error_message)
+            error = CustomException(e, sys)
+            logger.info(error.error_message)

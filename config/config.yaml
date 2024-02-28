@@ -21,3 +21,9 @@ data_transformation:
   Transformed_data_path: artifacts/data_transformation/Transformed
   Transformed_data_OBJ_PATH: artifacts/data_transformation/Processed/Transformed_data_OBJ.joblib
   Processed_data_OBJ_PATH: artifacts/data_transformation/Processed/Processed_data_OBJ.joblib
+
+model_trainer:
+  root_dir: artifacts/model_trainer
+  train_data_path: artifacts/data_transformation/Transformed/train.csv
+  test_data_path: artifacts/data_transformation/Transformed/test.csv
+  model_name: model.joblib
