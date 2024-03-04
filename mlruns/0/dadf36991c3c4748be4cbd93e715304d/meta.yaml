@@ -1,0 +1,15 @@
+artifact_uri: file:///E:/Project/DS%20Project/E%20to%20E/ML/Credit%20Utility/mlruns/0/dadf36991c3c4748be4cbd93e715304d/artifacts
+end_time: 1709519115804
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: dadf36991c3c4748be4cbd93e715304d
+run_name: powerful-squid-271
+run_uuid: dadf36991c3c4748be4cbd93e715304d
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1709519107101
+status: 3
+tags: []
+user_id: neera

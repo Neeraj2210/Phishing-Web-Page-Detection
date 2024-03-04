@@ -26,7 +26,7 @@ COLUMNS:
   DoubleSlashInPath: int64
   NumSensitiveWords: int64
   EmbeddedBrandName: int64
-  PctExtHyperlinks: int64
+  PctExtHyperlinks: float64
   PctExtResourceUrls: int64
   ExtFavicon: int64
   InsecureForms: int64

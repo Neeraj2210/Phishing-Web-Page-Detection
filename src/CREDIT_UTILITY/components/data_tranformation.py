@@ -142,53 +142,58 @@ class DataTransformation:
             test = pd.read_csv(self.config.test_data_path)
 
             logger.info("Obtaining FE steps object")
-        
             fe_obj = self.get_feature_engineering_object()
 
+            logger.info("Applying feature engineering on train and test sets")
             train = fe_obj.fit_transform(train)
-
             test = fe_obj.transform(test)
 
-            train.to_csv(os.path.join(self.config.Transformed_data_path, "train.csv"), index=False, mode='w')
-            test.to_csv(os.path.join(self.config.Transformed_data_path, "test.csv"), index=False, mode='w')
+            train.to_csv("train_data.csv")
+            test.to_csv("test_data.csv")
 
             logger.info("Data Saved after feature_engineering")
 
             processing_obj = self.get_data_transformation_obj()
 
             target_column_name = "CLASS_LABEL"
-        
-            X_train = train.drop(columns=target_column_name)  # Drop the target column
-            y_train = train[target_column_name]  # Extract the target column
-        
-            X_test = test.drop(columns=target_column_name)  # Drop the target column
-            y_test = test[target_column_name]  # Extract the target column
-        
-            logger.info(X_train.columns)  # Log the column names before transformation
-        
-            # Fit and transform X_train, and transform X_test
+
+            X_train = train.drop(columns=[target_column_name], axis=1)
+            y_train = train[target_column_name]
+
+            X_test = test.drop(columns=[target_column_name], axis=1)
+            y_test = test[target_column_name]
+
+            logger.info("Applying data transformation on train and test sets")
             X_train = processing_obj.fit_transform(X_train)
             X_test = processing_obj.transform(X_test)
-        
-            # Concatenate X_train and y_train, X_test and y_test
-            train_df = pd.concat([pd.DataFrame(X_train), pd.DataFrame(y_train)], axis=1)
-            test_df = pd.concat([pd.DataFrame(X_test), pd.DataFrame(y_test)], axis=1)
 
-            # Save transformed data
-            train_df.to_csv(os.path.join(self.config.Transformed_data_path, "train.csv"), index=False)
-            test_df.to_csv(os.path.join(self.config.Transformed_data_path, "test.csv"), index=False)
+            # Get transformed column names
+            transformed_columns = []
+            for name, transformer, features in processing_obj.transformers_:
+                if hasattr(transformer, 'get_feature_names_out'):
+                    if hasattr(transformer, 'categories_'):
+                        transformed_columns.extend(transformer.get_feature_names_out())
+                    else:
+                        transformed_columns.extend(transformer.get_feature_names_out(features))
+                else:
+                    transformed_columns.extend(features)
+
+            # Save transformed arrays with column names
+            np.savetxt(os.path.join(self.config.Transformed_data_path, "X_train.csv"), X_train, delimiter=",", header=",".join(transformed_columns))
+            np.savetxt(os.path.join(self.config.Transformed_data_path, "X_test.csv"), X_test, delimiter=",", header=",".join(transformed_columns))
+            np.savetxt(os.path.join(self.config.Transformed_data_path, "y_train.csv"), y_train, delimiter=",", header=target_column_name)
+            np.savetxt(os.path.join(self.config.Transformed_data_path, "y_test.csv"), y_test, delimiter=",", header=target_column_name)
 
             logger.info("Processed and Feature Engineered data")
-            logger.info(train_df.shape)
-            logger.info(test_df.shape)
+            logger.info("X_train shape: {}".format(X_train.shape))
+            logger.info("X_test shape: {}".format(X_test.shape))
 
             joblib.dump(processing_obj, self.config.Processed_data_OBJ_PATH)
             joblib.dump(fe_obj, self.config.Transformed_data_OBJ_PATH)
 
-            logger.info("Successfully dumped {} and {}".format(self.config.Processed_data_OBJ_PATH, self.config.Processed_data_OBJ_PATH))
+            logger.info("Successfully dumped {} and, {}".format(self.config.Processed_data_OBJ_PATH, self.config.Processed_data_OBJ_PATH))
             logger.info("Data Transformation completed")
-        
-            return (train_df.values, test_df.values, self.config.Processed_data_OBJ_PATH)
+            return (X_train, y_train), (X_test, y_test), self.config.Processed_data_OBJ_PATH
 
         except Exception as e:
             error = CustomException(e, sys)
